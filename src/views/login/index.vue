@@ -1,30 +1,39 @@
 <template>
   <div>
-      <van-nav-bar title="登录" />
-      <van-cell-group>
-        <van-field
-        v-model="user.mobile"
-        requierd
-        clearable
-        label="手机号"
-        plcaeholder="请输入手机号"
-        />
-        <van-field
-        v-model="user.code"
-        requierd
-        type = "password"
-        label="验证码"
-        plcaeholder="请输入验证码"
-        />
-      </van-cell-group>
+    <van-nav-bar title="登录" />
+    <van-cell-group>
+      <ValidationObserver tag="form" ref="loginForm">
+        <ValidationProvider tag="div" name="手机号" rules="required|phone" v-slot="{ errors }">
+          <van-field
+          v-model="user.mobile"
+          requierd
+          clearable
+          label="手机号"
+          plcaeholder="请输入手机号"
+          :error-message="errors[0]"
+          />
+        </ValidationProvider>
+        <ValidationProvider tag="div" name="验证码" rules="required" v-slot="{ errors }">
+          <van-field
+          v-model="user.code"
+          requierd
+          type="password"
+          label="验证码"
+          plcaeholder="请输入验证码"
+          :error-message="errors[0]"
+          />
+        </ValidationProvider>
+      </ValidationObserver>
+    </van-cell-group>
     <div class="login-btn">
-        <van-button type = "info" @click="onLogin">登录</van-button>
+      <van-button type="info" :loading="isLoginLoading" @click="onLogin">登录</van-button>
     </div>
   </div>
 </template>
 
 <script>
-import request from '@/utils/request'
+// import request from '@/utils/request'
+import { login } from '@/api/user.js'
 
 export default {
   name: 'LoginIndex',
@@ -33,18 +42,29 @@ export default {
       user: {
         mobile: '',
         code: ''
-      }
+      },
+      isLoginLoading: false
     }
   },
 
   methods: {
     async onLogin () {
-      const { data } = await request({
-        method: 'POST',
-        url: '/app/v1_0/authorizations',
-        data: this.user
-      })
-      console.log(data)
+      try {
+        const isValid = await this.$refs.loginForm.validate()
+        if (!isValid) {
+          return
+        }
+        this.isLoginLoading = true
+        const { data } = await login(this.user)
+        console.log(data)
+        this.isLoginLoading = false
+        this.$toast.success('登陆成功')
+      } catch (err) {
+        if (err.response && err.response.status === 400) {
+          this.$toast.fail('手机号或验证码错误')
+        }
+      }
+      this.isLoginLoading = false
     }
   }
 }
