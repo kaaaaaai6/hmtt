@@ -34,6 +34,7 @@
 <script>
 // import request from '@/utils/request'
 import { login } from '@/api/user.js'
+// import { mapMutations } from 'vuex'
 
 export default {
   name: 'LoginIndex',
@@ -56,7 +57,7 @@ export default {
         }
         this.isLoginLoading = true
         const { data } = await login(this.user)
-        console.log(data)
+        this.setUser(data.data)
         this.isLoginLoading = false
         this.$toast.success('登陆成功')
       } catch (err) {
