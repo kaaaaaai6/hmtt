@@ -4,7 +4,7 @@ export const getItem = name => {
 }
 // 设置本地存储数据
 export const setItem = (name, data) => {
-  return JSON.parse(window.localStorage.setItem(name, JSON.stringify(data)))
+  return window.localStorage.setItem(name, JSON.stringify(data))
 }
 // 删除本地存储数据
 export const removeItem = name => {

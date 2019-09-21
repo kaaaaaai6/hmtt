@@ -56,8 +56,10 @@ export default {
           return
         }
         this.isLoginLoading = true
-        const { data } = await login(this.user)
-        this.setUser(data.data)
+        const res = await login(this.user)
+        // console.log(res.data.data)
+        this.$store.commit('setUser', res.data.data)
+        // console.log(123)
         this.isLoginLoading = false
         this.$toast.success('登陆成功')
       } catch (err) {
