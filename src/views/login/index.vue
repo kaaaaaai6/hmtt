@@ -62,6 +62,7 @@ export default {
         // console.log(123)
         this.isLoginLoading = false
         this.$toast.success('登陆成功')
+        this.$router.push('/')
       } catch (err) {
         if (err.response && err.response.status === 400) {
           this.$toast.fail('手机号或验证码错误')
